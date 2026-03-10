@@ -1,0 +1,25 @@
+# --- Python / Virtual Environment ---
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Django ---
+db.sqlite3
+local_settings.py
+.env
+media/
+staticfiles/
+
+# --- IDE / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- SIEM Specific ---
+*.log
+# If you decide to store Nmap xml exports locally
+exports/
