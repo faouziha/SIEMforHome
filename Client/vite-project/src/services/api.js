@@ -19,4 +19,11 @@ export const securityService = {
     
     // Future: Trigger a new scan from the UI
     runNetworkScan: () => apiClient.post('devices/scan/'),
+
+    getRiskSummary: () => apiClient.get('devices/risk-summary/'),
+
+    resolveAlert: (id) => apiClient.post(`alerts/${id}/resolve/`),
+
+    getSettings: () => apiClient.get('settings/'),
+    updateSettings: (data) => apiClient.post('settings/', data),
 };

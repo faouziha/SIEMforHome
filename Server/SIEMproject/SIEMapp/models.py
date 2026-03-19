@@ -57,3 +57,13 @@ class NetworkScan(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     devices_found = models.IntegerField()
     scan_type = models.CharField(max_length=50)
+
+
+class SystemSettings(models.Model):
+    tshark_path = models.CharField(max_length=500, default="")
+    nmap_path = models.CharField(max_length=500, default="")
+    interface = models.CharField(max_length=100, default="1")
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return "System Configuration"

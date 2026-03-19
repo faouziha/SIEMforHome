@@ -4,24 +4,34 @@ import string
 import platform
 import subprocess
 
+# We import the model inside the function to avoid circular import issues
+# since this is inside the /utils/ folder
+
 def find_tshark_globally():
     """
-    Looks for TShark in PATH, then .env, then common paths on all available drives.
+    Looks for TShark in DB first, then PATH, then .env, then common paths.
     """
-    # 1. Check System PATH
+    # 1. Check Database first (User Preference)
+    try:
+        from SIEMapp.models import SystemSettings
+        config = SystemSettings.objects.filter(id=1).first()
+        if config and config.tshark_path and os.path.exists(config.tshark_path):
+            return config.tshark_path
+    except Exception:
+        # This handles cases where migrations haven't run yet or we are outside Django context
+        pass
+
+    # 2. Check System PATH
     path = shutil.which("tshark")
     if path: return path
 
-    # 2. Check Environment Variable
+    # 3. Check Environment Variable
     path = os.getenv("TSHARK_PATH")
     if path and os.path.exists(path): return path
 
-    # 3. Targeted Drive Search (Windows Only)
+    # 4. Targeted Drive Search (Windows Only)
     if platform.system() == "Windows":
-        # Get all drive letters currently connected (C:, D:, etc.)
         drives = [f"{d}:\\" for d in string.ascii_uppercase if os.path.exists(f"{d}:\\")]
-        
-        # Common installation sub-folders
         sub_folders = [
             r"Wireshark\tshark.exe",
             r"Program Files\Wireshark\tshark.exe",
@@ -57,6 +67,7 @@ def validate_siem_env():
         
         # List Interfaces
         try:
+            # We use the path we found (from DB or Auto-detect) to get interfaces
             output = subprocess.check_output([tshark_path, "-D"], text=True)
             status["available_interfaces"] = [line.strip() for line in output.strip().split('\n')]
         except:
