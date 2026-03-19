@@ -13,7 +13,7 @@ function App() {
   return (
     <div className="flex min-h-screen w-full bg-[#0d1117] text-white overflow-x-hidden">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto mt-10 md:mt-0">
+      <main className="flex-1 overflow-y-auto mt-12 md:mt-0">
         <Routes>
           {/* Redirect root to dashboard */}
           <Route path="/" element={<Navigate to="/view/dashboard" />} />
