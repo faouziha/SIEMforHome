@@ -46,10 +46,11 @@ SIEM_FOR_HOME_NETWORK/
 │   ├── src/
 │   └── .gitignore
 ├── server/                 # Django backend application
-│   ├── manage.py
-│   ├── requirements.txt
-│   ├── SIEMapp/
-│   └── .gitignore
+│   ├── .venv
+│   ├── SIEMproject/
+      ├── SIEMproject/
+│     ├── SIEMapp/
+│     └── .gitignore
 └── README.md
 ```
 
