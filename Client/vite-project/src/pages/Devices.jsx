@@ -2,9 +2,13 @@ import React, { useContext, useState } from 'react';
 import { SecurityContext } from '../context/SecurityContext';
 import { Monitor, RefreshCcw, Wifi, Server } from 'lucide-react';
 import DeviceTable from '../components/DeviceTable';
+import { DeviceDrawer } from "../components/DeviceCard";
 
 const DevicesPage = () => {
   const { devices, loading, refreshData } = useContext(SecurityContext);
+  const [selectedId, setSelectedId] = useState(null);
+  // Look the device up by id so the drawer stays fresh after the 30s refresh
+  const selected = devices.find((d) => d.id === selectedId) || null;
   const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleTimeString());
 
   const handleRefresh = async () => {
@@ -17,7 +21,7 @@ const DevicesPage = () => {
   };
 
   return (
-    <div className="p-4 md:p-8 bg-[#0d1117] min-h-screen">
+    <div className="p-4 md:p-8 min-h-screen">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
         <div className="w-full md:w-auto">
@@ -55,7 +59,7 @@ const DevicesPage = () => {
       <div className="bg-[#161b22] rounded-xl border border-gray-800 overflow-x-auto shadow-2xl">
         {devices.length > 0 ? (
           <div className="min-w-[600px]"> {/* Ensures table doesn't squash too much on mobile */}
-            <DeviceTable devices={devices} />
+            <DeviceTable devices={devices} onSelect={(d) => setSelectedId(d.id)} />
           </div>
         ) : (
           <div className="p-10 md:p-20 text-center">
@@ -69,6 +73,8 @@ const DevicesPage = () => {
           </div>
         )}
       </div>
+
+      <DeviceDrawer device={selected} onClose={() => setSelectedId(null)} />
 
       {/* Footer Info */}
       <div className="mt-6 flex items-center gap-2 text-[9px] md:text-[10px] text-gray-600 font-mono uppercase tracking-widest">
