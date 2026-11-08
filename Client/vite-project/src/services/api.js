@@ -20,7 +20,13 @@ export const securityService = {
     // Future: Trigger a new scan from the UI
     runNetworkScan: () => apiClient.post('devices/scan/'),
 
+    // Partial update, e.g. { nickname: "Living-room TV" } (null clears it)
+    updateDevice: (id, data) => apiClient.patch(`devices/${id}/`, data),
+
     getRiskSummary: () => apiClient.get('devices/risk-summary/'),
+
+    // Aggregated alert history (timeline, heatmap, breakdowns) for the last N days
+    getAlertHistory: (days = 30) => apiClient.get('alerts/history/', { params: { days } }),
 
     resolveAlert: (id) => apiClient.post(`alerts/${id}/resolve/`),
 

@@ -7,13 +7,14 @@ import AlertsPage from './pages/Alerts';
 import ScansPage from './pages/Scans';
 import SettingsPage from './pages/SettingsPage';
 import TopologyPage from './pages/TopologyPage';
+import HistoryPage from "./pages/History";
 // Import other pages as you create them
 
 function App() {
   return (
-    <div className="flex min-h-screen w-full bg-[#0d1117] text-white overflow-x-hidden">
+    <div className="flex min-h-screen w-full text-white overflow-x-hidden">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto mt-12 md:mt-0">
+      <main className="flex-1 min-w-0 overflow-y-auto mt-12 lg:mt-0">
         <Routes>
           {/* Redirect root to dashboard */}
           <Route path="/" element={<Navigate to="/view/dashboard" />} />
@@ -26,6 +27,7 @@ function App() {
           <Route path="/view/scans" element={<ScansPage />} />
           <Route path="/view/settings" element={<SettingsPage />} />
           <Route path="/view/topology" element={<TopologyPage />} />
+          <Route path="/view/history" element={<HistoryPage />} />
         </Routes>
       </main>
     </div>

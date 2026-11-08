@@ -41,7 +41,7 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className="p-4 md:p-8 bg-[#0d1117] min-h-screen text-white relative">
+    <div className="p-4 md:p-8 min-h-screen text-white relative">
       
       {/* --- FLOATING NOTIFICATION --- */}
       {statusMsg.show && (

@@ -9,6 +9,7 @@ import {
   Filter,
 } from "lucide-react";
 import { securityService } from "../services/api";
+import { SEVERITIES, SEVERITY_CLASSES, normalizeSeverity, severityRank } from "../utils/severity";
 
 const AlertsPage = () => {
   const { alerts, refreshData } = useContext(SecurityContext);
@@ -27,23 +28,19 @@ const AlertsPage = () => {
   const filteredAlerts = alerts
     .filter((alert) => !alert.is_resolved)
     .filter(
-      (alert) => severityFilter === "All" || alert.severity === severityFilter,
+      (alert) => severityFilter === "All" || normalizeSeverity(alert.severity) === severityFilter,
     )
     .filter(
       (alert) =>
         alert.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
         alert.alert_type.toLowerCase().includes(searchQuery.toLowerCase()),
-    );
+    )
+    .sort((a, b) => severityRank(b.severity) - severityRank(a.severity) || new Date(b.timestamp) - new Date(a.timestamp));
 
-  const getSeverityStyle = (sev) => {
-    if (sev === "High") return "border-red-500/50 bg-red-500/10 text-red-400";
-    if (sev === "Medium")
-      return "border-yellow-500/50 bg-yellow-500/10 text-yellow-400";
-    return "border-blue-500/50 bg-blue-500/10 text-blue-400";
-  };
+  const getSeverityStyle = (sev) => SEVERITY_CLASSES[normalizeSeverity(sev)];
 
   return (
-    <div className="p-4 md:p-8 bg-[#0d1117] min-h-screen">
+    <div className="p-4 md:p-8 min-h-screen">
       <div className="flex justify-between items-center mb-6 md:mb-8">
         <h1 className="text-xl md:text-2xl font-bold text-white flex items-center gap-3">
           <ShieldAlert className="text-red-500" size={24} />
@@ -56,7 +53,7 @@ const AlertsPage = () => {
       </div>
 
       {/* --- RESPONSIVE FILTER BAR --- */}
-      <div className="flex flex-col lg:flex-row gap-4 mb-8 bg-[#161b22] p-3 md:p-4 rounded-xl border border-gray-800">
+      <div className="flex flex-col lg:flex-row gap-4 mb-8 card p-3 md:p-4">
         <div className="flex-1 relative">
           <Search
             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
@@ -75,7 +72,7 @@ const AlertsPage = () => {
           <div className="flex items-center gap-2 bg-black/30 border border-gray-700 rounded-lg px-3 py-1 flex-1 lg:flex-none">
             <Filter size={16} className="text-gray-500" />
             <select
-              className="bg-transparent"
+              className="bg-transparent text-sm text-gray-200 py-1 focus:outline-none"
               value={severityFilter}
               onChange={(e) => setSeverityFilter(e.target.value)}
             >
@@ -83,15 +80,11 @@ const AlertsPage = () => {
               <option value="All" className="bg-[#161b22] text-white">
                 All Levels
               </option>
-              <option value="High" className="bg-[#161b22] text-white">
-                High
-              </option>
-              <option value="Medium" className="bg-[#161b22] text-white">
-                Medium
-              </option>
-              <option value="Low" className="bg-[#161b22] text-white">
-                Low
-              </option>
+              {[...SEVERITIES].reverse().map((s) => (
+                <option key={s} value={s} className="bg-[#161b22] text-white">
+                  {s}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -118,10 +111,13 @@ const AlertsPage = () => {
                   </h3>
                   <div className="flex items-center gap-3 text-[10px] md:text-xs font-mono opacity-50">
                     <Clock size={10} />{" "}
-                    {new Date(alert.timestamp).toLocaleTimeString([], {
+                    {new Date(alert.timestamp).toLocaleString([], {
+                      month: "short",
+                      day: "numeric",
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
+                    {alert.device_hostname && <span>· {alert.device_hostname}</span>}
                   </div>
                 </div>
               </div>
@@ -129,7 +125,7 @@ const AlertsPage = () => {
               {/* Severity and Action wrapper */}
               <div className="flex items-center justify-between sm:justify-end gap-4 pt-3 sm:pt-0 border-t border-white/5 sm:border-none">
                 <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded border border-current">
-                  {alert.severity}
+                  {normalizeSeverity(alert.severity)}
                 </span>
                 <button
                   onClick={() => handleResolve(alert.id)}
